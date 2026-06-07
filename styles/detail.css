@@ -1,0 +1,100 @@
+/*
+ * Detail-page specific styling.
+ * Builds on the design tokens declared in base.css (at-1): colors, spacing,
+ * radius and font tokens are consumed via var() with conservative fallbacks
+ * so the page degrades gracefully if a token is missing.
+ */
+
+.detail {
+  max-width: var(--container-width, 720px);
+  margin: 0 auto;
+  padding: var(--space-lg, 2rem) var(--space-md, 1rem);
+}
+
+.detail__loading {
+  color: var(--color-muted, #6b7280);
+}
+
+.detail__back {
+  display: inline-block;
+  margin-bottom: var(--space-md, 1rem);
+  color: var(--color-link, #2563eb);
+  text-decoration: none;
+  font-size: var(--font-sm, 0.9rem);
+}
+
+.detail__back:hover,
+.detail__back:focus {
+  text-decoration: underline;
+}
+
+.detail__job {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: var(--radius-md, 0.5rem);
+  padding: var(--space-lg, 2rem);
+}
+
+.detail__header {
+  border-bottom: 1px solid var(--color-border, #e5e7eb);
+  padding-bottom: var(--space-md, 1rem);
+  margin-bottom: var(--space-md, 1rem);
+}
+
+.detail__title {
+  margin: 0 0 var(--space-xs, 0.25rem);
+  font-size: var(--font-xl, 1.75rem);
+  line-height: 1.2;
+  color: var(--color-text, #111827);
+}
+
+.detail__company {
+  margin: 0;
+  font-size: var(--font-md, 1.1rem);
+  color: var(--color-muted, #6b7280);
+}
+
+.detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm, 0.5rem);
+  list-style: none;
+  margin: var(--space-sm, 0.5rem) 0 0;
+  padding: 0;
+}
+
+.detail__meta-item {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2xs, 0.15rem) var(--space-sm, 0.5rem);
+  border-radius: var(--radius-sm, 0.25rem);
+  background: var(--color-muted-bg, #f3f4f6);
+  color: var(--color-text, #111827);
+  font-size: var(--font-sm, 0.9rem);
+}
+
+.detail__description {
+  white-space: pre-line;
+  line-height: 1.6;
+  color: var(--color-text, #111827);
+}
+
+.detail__empty {
+  text-align: center;
+  padding: var(--space-xl, 3rem) var(--space-md, 1rem);
+  color: var(--color-muted, #6b7280);
+}
+
+.detail__empty-title {
+  margin: 0 0 var(--space-sm, 0.5rem);
+  font-size: var(--font-lg, 1.4rem);
+  color: var(--color-text, #111827);
+}
+
+.detail__empty--error .detail__empty-title {
+  color: var(--color-danger, #b91c1c);
+}
+
+.detail__empty-text {
+  margin: 0;
+}
