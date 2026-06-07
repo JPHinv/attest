@@ -1,0 +1,79 @@
+/*
+ * base.css — gedeelde design-tokens + reset voor het vacature-job-board.
+ *
+ * Bevat ALLEEN globale fundamenten: CSS-variabelen (kleur, spacing, typografie),
+ * een lichte reset, en de basis voor body + container.
+ * Kaart- en detail-specifieke styling hoort bij de andere workers en staat
+ * hier bewust NIET in.
+ */
+
+:root {
+  /* Kleur */
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-text: #1c1f24;
+  --color-text-muted: #5b6470;
+  --color-border: #e2e5ea;
+  --color-accent: #2563eb;
+  --color-accent-contrast: #ffffff;
+
+  /* Spacing (8px-schaal) */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+
+  /* Typografie */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 2rem;
+  --line-height: 1.5;
+
+  /* Vorm */
+  --radius: 0.5rem;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --container-width: 60rem;
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+img,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+/* Basis */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding: var(--space-lg) var(--space-md);
+}
