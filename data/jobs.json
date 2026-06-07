@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "title": "Medior Front-end Developer",
+    "company": "Tulip Digital",
+    "location": "Amsterdam",
+    "type": "Fulltime",
+    "description": "Bij Tulip Digital bouw je toegankelijke webapplicaties met vanilla JavaScript en moderne CSS. Je werkt in een klein team aan klantprojecten, denkt mee over architectuur en bewaakt de kwaliteit van de codebase. We zoeken iemand met oog voor detail en gevoel voor design."
+  },
+  {
+    "id": "2",
+    "title": "Back-end Engineer (Node.js)",
+    "company": "Polder Software",
+    "location": "Utrecht",
+    "type": "Parttime",
+    "description": "Als back-end engineer bij Polder Software ontwerp en onderhoud je REST-API's en datakoppelingen. Je hebt ervaring met Node.js, denkt na over schaalbaarheid en betrouwbaarheid, en werkt graag samen met front-enders. Parttime (24-32 uur) is bespreekbaar."
+  },
+  {
+    "id": "3",
+    "title": "Stage UX/UI Design",
+    "company": "Kanaal Creatief",
+    "location": "Rotterdam",
+    "type": "Stage",
+    "description": "Loop stage bij Kanaal Creatief en werk mee aan het ontwerp van digitale producten. Je maakt wireframes en prototypes, voert gebruikersonderzoek uit en presenteert je werk aan het team. Een meewerkstage voor HBO-studenten met affiniteit voor interactieontwerp."
+  }
+]
