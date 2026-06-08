@@ -98,6 +98,45 @@ binnen en wordt hier 1-op-1 doorgegeven.
 
 ---
 
+## GAP: JobPosting jobLocation land
+
+**Wat:** Een `JobPosting` heeft binnen `jobLocation.address` een
+`addressCountry` nodig (verplicht voor een valide adres bij Google for Jobs).
+Voorheen stond hier een **hardgecodeerde** `"NL"` — in strijd met de
+golf-2-anti-hardcode-discipline ("Niets hardgecodeerd ... geen stad in code");
+land valt onder diezelfde regel.
+
+**Nu (golf 2):** `addressCountry` wordt **afgeleid** uit `siteConfig.locale`
+via `toAddressCountry()` in `components/JobPostingJsonLd.tsx`, niet meer
+gehardcode. Draagt de locale een regio-subtag (BCP-47, bv. `"nl-BE"`,
+`"en-GB"`), dan wordt die als landcode gebruikt; ontbreekt de regio (bv.
+`"nl"`), dan mapt een kleine, expliciete **taal->land best-effort proxy** de
+taal naar een land (`nl` → `NL`). Onbekende locales **falen luid** (throw,
+build-time) i.p.v. stil een verkeerd land te claimen.
+
+**Subtiliteit / waarom dit een GAP blijft:**
+
+- Een locale beschrijft een **TAAL**, niet per se een **LAND**. `siteConfig.locale`
+  als landbron is daarom een **proxy**, geen waarheid.
+- Een **vacature kan in een ander land liggen dan de site** (een NL-talige site
+  met een vacature in België). Eén land-per-site is dus principieel te grof.
+
+**Later:** het definitieve land hoort uit de **config-laag** te komen
+(per-tenant, expliciet land i.p.v. afgeleid uit taal) en/of **per vacature** uit
+de echte bron, als **contract-uitbreiding** op het bevroren `Job`-model
+(`lib/jobSource/types.ts`) — afkomstig uit de IH-Hub-bron, niet afgeleid. De
+waarde stroomt dan via de adapter-laag binnen en wordt hier 1-op-1 doorgegeven.
+Het bevroren `SiteConfig`- én `Job`-contract blijven nu **ongewijzigd**.
+
+**Referentie/stub:** `components/JobPostingJsonLd.tsx` (`toAddressCountry()`),
+`config/types.ts` (`SiteConfig.locale` — bevroren, geen apart land-veld),
+`lib/jobSource/types.ts` (`Job` — bevroren, geen land-veld). Zie ook
+**GAP: IH-Hub-adapter** voor waar de echte per-vacature velden vandaan moeten
+komen, en **GAP: definitieve config-laag (tenant-resolver)** voor een expliciet
+per-tenant land.
+
+---
+
 ## GAP: definitieve build-/deploy-strategie
 
 **Wat:** Per-tenant host, CDN, en revalidatie/ISR. In golf 1 bewust open

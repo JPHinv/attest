@@ -1,4 +1,5 @@
 import type { Job } from "@/lib/jobSource";
+import { siteConfig } from "@/site.config";
 
 /**
  * JobPosting JSON-LD (schema.org) voor Google for Jobs.
@@ -44,6 +45,50 @@ function toEmploymentType(type: string): string {
 }
 
 /**
+ * Leidt de ISO-3166-1-alpha-2-landcode voor `jobLocation.address.addressCountry`
+ * af uit de site-locale (`siteConfig.locale`) i.p.v. een hardgecodeerde "NL".
+ * Anti-hardcode-discipline (golf-2-brief): "Niets hardgecodeerd ... geen stad
+ * in code" — land valt onder diezelfde regel en moet uit de config-laag komen.
+ *
+ * SUBTILITEIT: een locale beschrijft een TAAL (bv. "nl"), NIET per se een LAND.
+ * Een BCP-47-locale kán een regio-subtag dragen ("nl-BE", "en-GB"); is die
+ * aanwezig, dan is dat de betrouwbaarste landindicatie en gebruiken we die
+ * direct. Ontbreekt de regio, dan mappen we de taal als BEST-EFFORT proxy naar
+ * een land. Dit is bewust GEEN waarheid over de feitelijke vacaturelocatie —
+ * een vacature kan in een ander land liggen dan de site. Zie
+ * INTEGRATION-NOTES.md (GAP: JobPosting jobLocation land).
+ *
+ * Onbekende locales vallen NIET stil terug op een verkeerd land: we gooien
+ * (luid, build-time) zodat een verkeerde config zichtbaar faalt i.p.v.
+ * stilletjes een onjuist "NL" te claimen — net als resolveSiteConfig().
+ */
+function toAddressCountry(locale: string): string {
+  // BCP-47: scheid taal- van optionele regio-subtag ("nl", "nl-BE", "nl_BE").
+  const [languageRaw, regionRaw] = locale.trim().split(/[-_]/);
+
+  if (regionRaw) {
+    // Expliciete regio-subtag = betrouwbaarste landindicatie; gebruik direct.
+    return regionRaw.toUpperCase();
+  }
+
+  // Best-effort taal->land proxy. Bewust klein en expliciet; structureel
+  // uitbreiden hoort bij een echte config-/contract-uitbreiding, niet hier.
+  const languageToCountry: Record<string, string> = {
+    nl: "NL",
+  };
+  const country = languageToCountry[languageRaw.toLowerCase()];
+  if (!country) {
+    throw new Error(
+      `Kan geen landcode afleiden uit locale "${locale}". Voeg een regio-subtag ` +
+        `toe (bv. "${languageRaw}-XX") of breid de taal->land-mapping uit in ` +
+        `components/JobPostingJsonLd.tsx. Zie INTEGRATION-NOTES.md ` +
+        `(GAP: JobPosting jobLocation land).`,
+    );
+  }
+  return country;
+}
+
+/**
  * Voorkomt dat een letterlijke `</script>` of HTML-injectie in de data de
  * JSON-LD uit zijn script-context breekt. We escapen `<`, `>` en `&` naar hun
  * unicode-escapes; de JSON blijft daarmee geldig én veilig inline-baar.
@@ -83,7 +128,9 @@ export function JobPostingJsonLd({ job, url }: JobPostingJsonLdProps) {
       address: {
         "@type": "PostalAddress",
         addressLocality: job.location,
-        addressCountry: "NL",
+        // Afgeleid uit siteConfig.locale (best-effort proxy), NIET hardgecodeerd.
+        // Zie toAddressCountry() en INTEGRATION-NOTES.md (GAP: JobPosting jobLocation land).
+        addressCountry: toAddressCountry(siteConfig.locale),
       },
     },
     // BEWUST GEEN directApply: solliciteren loopt (later) via een doorzet naar
