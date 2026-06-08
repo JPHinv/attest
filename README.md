@@ -1,70 +1,93 @@
-# Vacature Job Board
+# vacature-site (golf-1 fundament)
 
-Een vacature-job-board in vanilla HTML/JS — geen build-stap, geen framework,
-geen database. De vacatures komen uit `data/jobs.json` en worden ontsloten via
-de datalaag in `src/jobsRepository.js`.
+Een statisch-renderende, SEO-sterke **vacature-site** in Next.js (App Router,
+TypeScript, SSG). Dit is een **TEST/voorbeeld** in deze repo (`attest`): een
+eerste, later-integreerbare vorm van het sites-factory `site_type`
+**`vacature-site`** — los van sites-factory zelf.
 
-De overzichtspagina (`index.html`) toont alle vacatures in een responsive
-kaart-grid met een groene huisstijl, een client-side zoekveld (op functie,
-bedrijf of plaats) en filter-chips op dienstverband. De detailpagina
-(`job.html?id=<id>`) toont één vacature in dezelfde stijl.
+> Golf 1 levert alleen het **fundament** + het **bevroren contract**. De
+> overzicht- en detailpagina komen in **golf 2** (andere workers). De
+> homepage is nu een minimale placeholder.
+>
+> Alle vacatures zijn **synthetische testdata** (elke werkgever draagt het
+> label `(testdata)`). Geen scraping, geen externe bronnen.
 
-Alle visuals zijn **zelf-gegenereerd**: de beeldvlakken zijn CSS-gradients en
-de bedrijfslogo's zijn gekleurde cirkels met initialen, beide deterministisch
-afgeleid uit de bedrijfsnaam (`src/branding.js`). Er worden bewust geen externe
-afbeeldingen of netwerk-bronnen geladen, zodat het board volledig offline werkt
-over een simpele http-server.
-
-## Lokaal draaien
-
-ES-modules (`import`/`export`) en `fetch()` werken **niet** via het
-`file://`-protocol. Open de pagina's daarom niet rechtstreeks vanaf schijf,
-maar serveer de map via een lokale webserver.
-
-Vanuit de hoofdmap van het project:
+## Draaien
 
 ```sh
-python3 -m http.server 8080
+npm install
+npm run dev      # ontwikkelserver op http://localhost:3000
 ```
 
-Open vervolgens in je browser:
+Productiebuild:
 
-```
-http://localhost:8080
-```
-
-Elke andere statische webserver werkt ook, zolang je de pagina's via
-`http://` opent in plaats van `file://`.
-
-## Datalaag
-
-De databron zit volledig verborgen achter twee async functies in
-`src/jobsRepository.js`:
-
-```js
-import { getAllJobs, getJobById } from "./src/jobsRepository.js";
-
-const jobs = await getAllJobs();      // Promise<Job[]>
-const job = await getJobById("1");    // Promise<Job|null>
+```sh
+npm run build    # next build (SSG waar mogelijk) — moet slagen
+npm run start    # serveer de productiebuild
 ```
 
-Het `Job`-model (bevroren contract):
+Typecheck:
 
-| Veld          | Type     | Omschrijving                                  |
-| ------------- | -------- | --------------------------------------------- |
-| `id`          | `string` | Stabiele, unieke identifier                   |
-| `title`       | `string` | Functietitel                                  |
-| `company`     | `string` | Naam van het bedrijf                          |
-| `location`    | `string` | Standplaats                                   |
-| `type`        | `string` | Dienstverband (`Fulltime` / `Parttime` / ...) |
-| `description` | `string` | Omschrijving van de vacature                  |
-| `category`    | `string` | Optioneel: sector/rubriek (bv. `Techniek`)    |
+```sh
+npm run typecheck
+```
 
-De kernvelden `id`, `title`, `company`, `location`, `type` en `description`
-liggen vast. `category` is een optionele uitbreiding: ontbreekt die in de bron,
-dan normaliseert de repository die naar een lege string. Visuele afgeleiden
-(logo-initialen, gradient) zitten **niet** in het model maar worden in de UI
-uit `company` afgeleid.
+## Twee presets (branche vs. stad)
 
-Omdat de UI alleen met deze functies praat, kan de bron later vervangen
-worden (bijvoorbeeld door een externe IH Hub) zonder de UI aan te passen.
+De site is tenant-neutraal: branche, stad, kleur, logo en domein zijn **config**,
+niet hardgecodeerd. Twee presets bewijzen dat het verschil puur config is. Kies
+de actieve preset via de env-var `SITE_PRESET` (default `branche`):
+
+```sh
+SITE_PRESET=branche npm run dev   # branche-gerichte preset (default)
+SITE_PRESET=stad    npm run dev   # stad-gerichte preset
+```
+
+## Structuur
+
+```
+site.config.ts            # ENE plek voor actieve config (preset-selectie via SITE_PRESET)
+config/
+  types.ts                # SiteConfig (incl. site_type + primaryAxis)
+  presets/branche.ts      # branche-gerichte preset (demo/testdata)
+  presets/stad.ts         # stad-gerichte preset (demo/testdata)
+lib/
+  jobSource/
+    types.ts              # BEVROREN CONTRACT: Job + JobSource
+    localSource.ts        # synthetische testvacatures (actieve bron in golf 1)
+    ihHubAdapter.ts       # STUB — GAP: IH-Hub-adapter (later)
+    index.ts              # adapter-laag: getJobSource() — ENE bron-selectie
+  seo.ts                  # canonicalUrl, buildPageMetadata, jobDetailPath
+app/
+  layout.tsx              # site-brede metadata-defaults + viewport + thema
+  page.tsx                # MINIMALE placeholder-homepage (golf 2 vervangt dit)
+  sitemap.ts              # sitemap uit jobSource + config
+  robots.ts               # robots.txt uit config
+  globals.css             # globale basis-CSS
+```
+
+## Bevroren contract
+
+Golf-2-workers bouwen hierop; **niet wijzigen** zonder expliciete
+contract-revisie. Zie [`INTEGRATION-NOTES.md`](./INTEGRATION-NOTES.md) voor de
+integratiepunten richting sites-factory (site_type-cascade, config-laag,
+IH-Hub-adapter, tenant-resolver), elk met een `GAP`-marker.
+
+```ts
+export interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  branche: string;
+  type: string;
+  description: string;
+  postedAt: string;
+  applyUrl: string;
+}
+
+export interface JobSource {
+  getAllJobs(): Job[];
+  getJobById(id: string): Job | undefined;
+}
+```

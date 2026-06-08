@@ -1,0 +1,48 @@
+/*
+ * Globale basis-CSS (golf 1).
+ *
+ * Bewust minimaal: golf-2-workers bouwen de echte overzicht-/detail-UI. De
+ * themakleuren komen als CSS-custom-properties uit de config (gezet in
+ * app/layout.tsx via een inline style op <html>), zodat niets hier is
+ * hardgecodeerd.
+ */
+
+:root {
+  --color-primary: #1f6f54;
+  --color-on-primary: #ffffff;
+  --color-accent: #c7e8d8;
+  --color-text: #1a1a1a;
+  --color-bg: #ffffff;
+  --color-muted: #5a6470;
+  --max-width: 64rem;
+  --radius: 0.5rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+}
