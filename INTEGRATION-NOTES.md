@@ -74,6 +74,30 @@ nu bewust, zodat per ongeluk activeren direct zichtbaar faalt.
 
 ---
 
+## GAP: JobPosting validThrough
+
+**Wat:** Google raadt voor een `JobPosting` een `validThrough` (vervaldatum van
+de vacature) aan. Het bevroren `Job`-contract (`lib/jobSource/types.ts`) kent
+**geen** vervaldatum-veld.
+
+**Nu (golf 2):** we emitten `validThrough` **niet**. Een vervaldatum
+**fabriceren** (bv. plaatsingsdatum + X dagen) is expliciet verboden door de
+golf-2-brief ("Verzin GEEN salaris, vervaldatum of bedrijfsgegevens die er niet
+zijn"). `validThrough` is bij Google **"recommended"**, niet **"required"**,
+dus de JobPosting blijft zonder dit veld **valide** voor Google for Jobs.
+`types.ts` blijft ongewijzigd (bevroren contract).
+
+**Later:** zodra de echte bron een vervaldatum levert, hoort `validThrough` als
+**contract-uitbreiding** op het `Job`-model te komen — afkomstig uit de
+IH-Hub-bron, niet afgeleid/verzonnen. De waarde stroomt dan via de adapter-laag
+binnen en wordt hier 1-op-1 doorgegeven.
+
+**Referentie/stub:** `components/JobPostingJsonLd.tsx` (geen `validThrough`),
+`lib/jobSource/types.ts` (`Job` — bevroren, geen vervaldatum). Zie ook
+**GAP: IH-Hub-adapter** voor waar de echte velden vandaan moeten komen.
+
+---
+
 ## GAP: definitieve build-/deploy-strategie
 
 **Wat:** Per-tenant host, CDN, en revalidatie/ISR. In golf 1 bewust open

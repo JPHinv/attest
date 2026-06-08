@@ -44,22 +44,6 @@ function toEmploymentType(type: string): string {
 }
 
 /**
- * Berekent een redelijke `validThrough` (ISO-8601) op basis van de
- * plaatsingsdatum + 60 dagen. Google waardeert een einddatum; we leiden er een
- * af i.p.v. hem leeg te laten. Bij een onparseerbare datum wordt het veld
- * weggelaten (undefined) zodat de JSON valide blijft.
- */
-function deriveValidThrough(postedAt: string): string | undefined {
-  const posted = new Date(postedAt);
-  if (Number.isNaN(posted.getTime())) {
-    return undefined;
-  }
-  const validUntil = new Date(posted);
-  validUntil.setDate(validUntil.getDate() + 60);
-  return validUntil.toISOString();
-}
-
-/**
  * Voorkomt dat een letterlijke `</script>` of HTML-injectie in de data de
  * JSON-LD uit zijn script-context breekt. We escapen `<`, `>` en `&` naar hun
  * unicode-escapes; de JSON blijft daarmee geldig én veilig inline-baar.
@@ -72,8 +56,11 @@ function safeJsonLd(data: unknown): string {
 }
 
 export function JobPostingJsonLd({ job, url }: JobPostingJsonLdProps) {
-  const validThrough = deriveValidThrough(job.postedAt);
-
+  // BEWUST GEEN validThrough: het bevroren Job-contract kent geen vervaldatum,
+  // en die mag niet gefabriceerd worden (zie golf-2-brief: "Verzin GEEN salaris,
+  // vervaldatum of bedrijfsgegevens die er niet zijn"). validThrough is bij
+  // Google "recommended", niet "required", dus de JobPosting blijft valide
+  // zonder. Zie INTEGRATION-NOTES.md (GAP: JobPosting validThrough).
   const jsonLd: Record<string, unknown> = {
     "@context": "https://schema.org/",
     "@type": "JobPosting",
@@ -99,15 +86,13 @@ export function JobPostingJsonLd({ job, url }: JobPostingJsonLdProps) {
         addressCountry: "NL",
       },
     },
-    // De sollicitatie verloopt via de pagina zelf (ApplyButton-stub), dus
-    // directApply is hier zinvol en correct.
-    directApply: true,
+    // BEWUST GEEN directApply: solliciteren loopt (later) via een doorzet naar
+    // een externe IH-Hub-flow, niet binnen deze pagina. directApply: true zou
+    // richting Google een directe-sollicitatie-ervaring claimen die we niet
+    // bieden; het veld is optioneel, dus we laten het weg i.p.v. iets te
+    // beweren wat (nog) niet klopt. Zie components/ApplyButton.tsx (stub).
     url,
   };
-
-  if (validThrough) {
-    jsonLd.validThrough = validThrough;
-  }
 
   return (
     <script
