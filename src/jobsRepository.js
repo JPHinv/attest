@@ -13,6 +13,7 @@
  * @property {string} location     Standplaats.
  * @property {string} type         Dienstverband, bv. "Fulltime" / "Parttime" / "Stage".
  * @property {string} description  Omschrijving van de vacature.
+ * @property {string} category     Optionele sector/rubriek, bv. "Techniek". Leeg ("") als de bron die niet levert.
  */
 
 // Pad relatief aan de root-pagina's (index.html / job.html).
@@ -22,6 +23,12 @@ const SOURCE_URL = "./data/jobs.json";
  * Normaliseer een ruwe bron-record naar het bevroren Job-model.
  * Alle velden worden geforceerd naar string zodat de UI altijd veilig
  * met strings kan werken, ongeacht wat de bron levert.
+ *
+ * De kernvelden {id,title,company,location,type,description} liggen vast.
+ * `category` is een optionele uitbreiding: levert de bron die niet, dan
+ * normaliseren we naar een lege string zodat de UI er veilig op kan leunen.
+ * Visuele afgeleiden (logo-initialen, gradient) worden NIET hier bepaald maar
+ * in de UI afgeleid uit `company`, zodat de databron daar niets van hoeft te weten.
  *
  * @param {Object} raw
  * @returns {Job}
@@ -34,6 +41,7 @@ function normalizeJob(raw) {
     location: String(raw.location ?? ""),
     type: String(raw.type ?? ""),
     description: String(raw.description ?? ""),
+    category: String(raw.category ?? ""),
   };
 }
 

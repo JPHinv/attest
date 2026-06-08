@@ -9,12 +9,18 @@
 
 :root {
   /* Kleur */
-  --color-bg: #f5f6f8;
+  --color-bg: #f4f7f2;
   --color-surface: #ffffff;
-  --color-text: #1c1f24;
-  --color-text-muted: #5b6470;
-  --color-border: #e2e5ea;
-  --color-accent: #2563eb;
+  --color-text: #1c2a1b;
+  --color-text-muted: #5b6b58;
+  --color-border: #e2e8df;
+
+  /* Merkkleur — frisse grasgroen */
+  --color-brand: #3aaa35;
+  --color-brand-dark: #2f8c2b;
+  --color-brand-darker: #256e22;
+  --color-brand-tint: #eef7ec;
+  --color-accent: var(--color-brand);
   --color-accent-contrast: #ffffff;
 
   /* Spacing (8px-schaal) */

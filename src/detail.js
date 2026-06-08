@@ -1,4 +1,10 @@
 import { getJobById } from "./jobsRepository.js";
+import {
+  escapeHtml,
+  companyInitials,
+  companyGradient,
+  companyColor,
+} from "./branding.js";
 
 const root = document.getElementById("detail");
 
@@ -9,24 +15,25 @@ function getRequestedId() {
   return id !== null ? id.trim() : "";
 }
 
-/** Escape user/data text before injecting it into innerHTML. */
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 const backLink = `<a class="detail__back" href="index.html">&larr; Terug naar overzicht</a>`;
 
-/** Render a full vacancy. */
+/** Render a full vacancy in the green house style. */
 function renderJob(job) {
+  const gradient = companyGradient(job.company);
+  const logoColor = companyColor(job.company);
+  const initials = escapeHtml(companyInitials(job.company));
+  const category = job.category
+    ? `<p class="detail__category">${escapeHtml(job.category)}</p>`
+    : "";
+
   root.innerHTML = `
     ${backLink}
     <article class="detail__job">
+      <div class="detail__banner" style="background-image: ${gradient};">
+        <span class="detail__logo" style="background: ${logoColor};">${initials}</span>
+      </div>
       <header class="detail__header">
+        ${category}
         <h1 class="detail__title">${escapeHtml(job.title)}</h1>
         <p class="detail__company">${escapeHtml(job.company)}</p>
         <ul class="detail__meta">
@@ -35,6 +42,7 @@ function renderJob(job) {
         </ul>
       </header>
       <section class="detail__description">${escapeHtml(job.description)}</section>
+      <a class="detail__apply" href="index.html">Solliciteer op deze vacature</a>
     </article>
   `;
 }

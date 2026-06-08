@@ -1,26 +1,65 @@
 /*
- * Detail-page specific styling.
- * Builds on the design tokens declared in base.css (at-1): colors, spacing,
- * radius and font tokens are consumed via var() with conservative fallbacks
- * so the page degrades gracefully if a token is missing.
+ * Detailpagina — in dezelfde groene huisstijl als de overzichtspagina.
+ * Bouwt voort op de design-tokens uit base.css (kleur, spacing, radius, font),
+ * met conservatieve fallbacks zodat de pagina ook zonder tokens leesbaar blijft.
+ * Visuals (gradient-banner, logo-initialen) zijn zelf-gegenereerd, geen externe URLs.
  */
 
+/* ---- Slanke merk-balk --------------------------------------------------- */
+
+.topbar {
+  background: linear-gradient(
+    160deg,
+    var(--color-brand, #3aaa35),
+    var(--color-brand-dark, #2f8c2b)
+  );
+}
+
+.topbar__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+  max-width: var(--container-width, 48rem);
+  margin-inline: auto;
+  padding: var(--space-md, 1rem);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.topbar__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.6rem;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 0.95rem;
+}
+
+.topbar__text {
+  font-size: var(--font-size-lg, 1.25rem);
+}
+
+/* ---- Detailkaart -------------------------------------------------------- */
+
 .detail {
-  max-width: var(--container-width, 720px);
+  max-width: var(--container-width, 48rem);
   margin: 0 auto;
-  padding: var(--space-lg, 2rem) var(--space-md, 1rem);
+  padding: var(--space-lg, 1.5rem) var(--space-md, 1rem) var(--space-xl, 2.5rem);
 }
 
 .detail__loading {
-  color: var(--color-muted, #6b7280);
+  color: var(--color-text-muted, #5b6b58);
 }
 
 .detail__back {
   display: inline-block;
   margin-bottom: var(--space-md, 1rem);
-  color: var(--color-link, #2563eb);
+  color: var(--color-brand-dark, #2f8c2b);
   text-decoration: none;
-  font-size: var(--font-sm, 0.9rem);
+  font-size: var(--font-size-sm, 0.9rem);
+  font-weight: 600;
 }
 
 .detail__back:hover,
@@ -30,28 +69,61 @@
 
 .detail__job {
   background: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #e5e7eb);
-  border-radius: var(--radius-md, 0.5rem);
-  padding: var(--space-lg, 2rem);
+  border: 1px solid var(--color-border, #e2e8df);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.detail__banner {
+  position: relative;
+  height: 9rem;
+  background-size: cover;
+  background-position: center;
+}
+
+.detail__logo {
+  position: absolute;
+  left: var(--space-lg, 1.5rem);
+  bottom: -1.75rem;
+  width: 3.75rem;
+  height: 3.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 3px solid var(--color-surface, #ffffff);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
 }
 
 .detail__header {
-  border-bottom: 1px solid var(--color-border, #e5e7eb);
-  padding-bottom: var(--space-md, 1rem);
-  margin-bottom: var(--space-md, 1rem);
+  border-bottom: 1px solid var(--color-border, #e2e8df);
+  padding: 2.25rem var(--space-lg, 1.5rem) var(--space-md, 1rem);
+}
+
+.detail__category {
+  margin: 0 0 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-brand-dark, #2f8c2b);
 }
 
 .detail__title {
   margin: 0 0 var(--space-xs, 0.25rem);
-  font-size: var(--font-xl, 1.75rem);
+  font-size: var(--font-size-xl, 1.75rem);
   line-height: 1.2;
-  color: var(--color-text, #111827);
+  color: var(--color-brand-darker, #256e22);
 }
 
 .detail__company {
   margin: 0;
-  font-size: var(--font-md, 1.1rem);
-  color: var(--color-muted, #6b7280);
+  font-size: var(--font-size-lg, 1.1rem);
+  font-weight: 600;
+  color: var(--color-text, #1c2a1b);
 }
 
 .detail__meta {
@@ -66,29 +138,50 @@
 .detail__meta-item {
   display: inline-flex;
   align-items: center;
-  padding: var(--space-2xs, 0.15rem) var(--space-sm, 0.5rem);
-  border-radius: var(--radius-sm, 0.25rem);
-  background: var(--color-muted-bg, #f3f4f6);
-  color: var(--color-text, #111827);
-  font-size: var(--font-sm, 0.9rem);
+  padding: 0.2rem var(--space-sm, 0.6rem);
+  border-radius: 999px;
+  background: var(--color-brand-tint, #eef7ec);
+  color: var(--color-brand-darker, #256e22);
+  font-size: var(--font-size-sm, 0.9rem);
+  font-weight: 600;
 }
 
 .detail__description {
   white-space: pre-line;
-  line-height: 1.6;
-  color: var(--color-text, #111827);
+  line-height: 1.65;
+  color: var(--color-text, #1c2a1b);
+  padding: var(--space-lg, 1.5rem);
 }
+
+.detail__apply {
+  display: inline-block;
+  margin: 0 var(--space-lg, 1.5rem) var(--space-lg, 1.5rem);
+  background: var(--color-brand, #3aaa35);
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 999px;
+  transition: background 0.15s ease;
+}
+
+.detail__apply:hover,
+.detail__apply:focus-visible {
+  background: var(--color-brand-dark, #2f8c2b);
+}
+
+/* ---- Lege / fout-status ------------------------------------------------- */
 
 .detail__empty {
   text-align: center;
   padding: var(--space-xl, 3rem) var(--space-md, 1rem);
-  color: var(--color-muted, #6b7280);
+  color: var(--color-text-muted, #5b6b58);
 }
 
 .detail__empty-title {
   margin: 0 0 var(--space-sm, 0.5rem);
-  font-size: var(--font-lg, 1.4rem);
-  color: var(--color-text, #111827);
+  font-size: var(--font-size-lg, 1.4rem);
+  color: var(--color-text, #1c2a1b);
 }
 
 .detail__empty--error .detail__empty-title {
