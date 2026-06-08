@@ -1,0 +1,30 @@
+name: CI
+
+# Draait de projectpoorten op elke PR en op pushes naar main. Zonder een
+# rapporterende check beschouwt de orchestrator een PR fail-closed als
+# "ci_failed"; deze workflow levert een echte, groene check op.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: typecheck + build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build (SSG)
+        run: npm run build
