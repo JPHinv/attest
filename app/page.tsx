@@ -2,60 +2,63 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/site.config";
 import { getJobSource } from "@/lib/jobSource";
 import { buildPageMetadata } from "@/lib/seo";
+import { JobFilter } from "@/components/JobFilter";
+import styles from "./page.module.css";
 
 /**
- * MINIMALE placeholder-homepage (golf 1).
+ * Vacature-OVERZICHT (golf 2) — vervangt de golf-1 placeholder.
  *
- * Bestaat alleen zodat het project bouwt en lokaal draait. Golf-2-workers
- * VERVANGEN deze pagina door het echte vacature-overzicht. Bouw hier dus geen
- * definitieve UI; houd het bewust simpel.
+ * Server-component die statisch (SSG) alle vacatures rendert. Data komt
+ * uitsluitend via de adapter-laag (getJobSource); de bron wordt nooit direct
+ * gelezen. Merk, kleur en logo komen uit site.config.
  *
- * Er wordt GEEN app/vacatures/[id]-route gemaakt — dat is golf 2.
+ * De filter-as is CONFIG-GEDREVEN: siteConfig.primaryAxis bepaalt of er op
+ * branche of op stad (location) gefilterd wordt. De filterwaarden worden in
+ * JobFilter afgeleid uit de vacatures zelf — niets hardgecodeerd.
  */
 
 export const metadata: Metadata = buildPageMetadata({
+  title: "Alle vacatures",
   description: siteConfig.description,
   path: "/",
 });
 
+/**
+ * Vertaalt de primaire as uit de config naar het Job-veld waarop gefilterd
+ * wordt en een leesbaar label voor de UI.
+ */
+function resolveFilterAxis(): { axis: "branche" | "location"; label: string } {
+  return siteConfig.primaryAxis === "stad"
+    ? { axis: "location", label: "Stad" }
+    : { axis: "branche", label: "Branche" };
+}
+
 export default function HomePage() {
-  // Bewijst dat de adapter-laag werkt en de testdata laadt — puur indicatief.
-  const jobCount = getJobSource().getAllJobs().length;
+  const jobs = getJobSource().getAllJobs();
+  const { axis, label } = resolveFilterAxis();
 
   return (
-    <main className="container">
-      <p
-        style={{
-          display: "inline-block",
-          background: "var(--color-accent)",
-          color: "var(--color-text)",
-          padding: "0.25rem 0.6rem",
-          borderRadius: "var(--radius)",
-          fontSize: "0.8rem",
-          fontWeight: 600,
-        }}
-      >
-        Golf-1 fundament · placeholder
-      </p>
+    <main>
+      <header className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div className={styles.brand}>
+            <span className={styles.logoMark} aria-hidden="true">
+              {siteConfig.logo.initials}
+            </span>
+            <span className={styles.wordmark}>{siteConfig.logo.wordmark}</span>
+          </div>
 
-      <h1>{siteConfig.brandName}</h1>
-      <p style={{ color: "var(--color-muted)", maxWidth: "40rem" }}>
-        {siteConfig.description}
-      </p>
+          <h1 className={styles.title}>{siteConfig.brandName}</h1>
+          <p className={styles.subtitle}>{siteConfig.description}</p>
+          <p className={styles.disclaimer}>
+            Alle getoonde vacatures zijn synthetische testdata.
+          </p>
+        </div>
+      </header>
 
-      <p>
-        Dit is de tijdelijke homepage van het golf-1 fundament. De
-        overzicht- en detailpagina&apos;s worden in golf 2 gebouwd. De actieve
-        configuratie is de <strong>{siteConfig.presetKey}</strong>-preset
-        (primaire as: <strong>{siteConfig.primaryAxis}</strong>), met{" "}
-        <strong>{jobCount}</strong> synthetische voorbeeldvacatures uit de
-        lokale testbron.
-      </p>
-
-      <p style={{ color: "var(--color-muted)", fontSize: "0.85rem" }}>
-        site_type: <code>{siteConfig.site_type}</code> · Alle vacatures zijn
-        verzonnen testdata.
-      </p>
+      <div className={styles.listSection}>
+        <JobFilter jobs={jobs} axis={axis} axisLabel={label} />
+      </div>
     </main>
   );
 }
